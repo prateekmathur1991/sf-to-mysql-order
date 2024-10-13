@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="sf-to-mysql-orderFlow" doc:id="adc0d7fa-c42c-4437-8d6e-1009817414db" >
+		<salesforce:modified-object-listener objectType="" doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" />
+	</flow>
+</mule>
