@@ -9,18 +9,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<salesforce:basic-connection username="prateekmathur1991@curious-bear-362857.com" password="AnandBhawan@2025" securityToken="jVShF2n2MVMXXgN5uNi3rczyS" />
 	</salesforce:sfdc-config>
 	<flow name="sf-to-mysql-orderFlow" doc:id="adc0d7fa-c42c-4437-8d6e-1009817414db" >
-		<salesforce:modified-object-listener doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" config-ref="Salesforce_Config" objectType="Opportunity">
+		<salesforce:modified-object-listener doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" config-ref="Salesforce_Config" objectType="Opportunity" triggersQuery="StageName='Closed Won'">
 			<scheduling-strategy >
 				<fixed-frequency />
 			</scheduling-strategy>
 		</salesforce:modified-object-listener>
-		<ee:transform doc:name="Transform Message" doc:id="1cf2ed52-e56a-4de4-8ef8-748cad8f4444" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		<salesforce:query-xml-stream doc:name="Get Account Details" doc:id="07430720-a377-4ade-9ca4-280693804701" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Name FROM Account WHERE ID = ':accId']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[{accId: payload.AccountId}]]]></salesforce:parameters>
+		</salesforce:query-xml-stream>
 	</flow>
 </mule>
