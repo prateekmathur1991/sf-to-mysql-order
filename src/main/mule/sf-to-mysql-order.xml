@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<salesforce:sfdc-config name="Mulesoft_User_Config" doc:name="Salesforce Config" doc:id="cc44019e-fbef-4a27-bbd7-8ea29f7ed146" >
 		<salesforce:basic-connection username="mulesoft.integration@curious-bear-362857-dev-ed.my.salesforce.com" password="AnandBhawan@2026" securityToken="BFyEOLLBBldrPuAu8DJQlBxh9" />
 	</salesforce:sfdc-config>
@@ -12,17 +13,16 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<salesforce:basic-connection username="prateekmathur1991@curious-bear-362857.com" password="AnandBhawan@2025" securityToken="jVShF2n2MVMXXgN5uNi3rczyS" />
 	</salesforce:sfdc-config>
 	<flow name="sf-to-mysql-orderFlow" doc:id="adc0d7fa-c42c-4437-8d6e-1009817414db" >
-		<salesforce:modified-object-listener doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" config-ref="Mulesoft_User_Config" objectType="Opportunity">
+		<salesforce:modified-object-listener doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" config-ref="Mulesoft_User_Config" objectType="Opportunity" triggersQuery="StageName='Closed Won'">
 			<scheduling-strategy >
 				<fixed-frequency />
 			</scheduling-strategy>
 		</salesforce:modified-object-listener>
-		<logger level="INFO" doc:name="Logger" doc:id="278ba4a5-1a8f-43f8-932a-a5312d1f57ae" message="Hello I am here"/>
-		<logger level="INFO" doc:name="Log Opportunity Details" doc:id="189009b9-07cd-413e-8a19-8517be1237a2" message="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;payload]"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	Name: payload.Name,&#10;	Amount: payload.Amount&#10;}]" doc:name="Create opportunityInfo" doc:id="ee3b326a-7d68-4a9f-a879-55c8f53d8e64" variableName="oppInfo"/>
 		<salesforce:query-xml-stream doc:name="Get Account Details" doc:id="07430720-a377-4ade-9ca4-280693804701" config-ref="Mulesoft_User_Config">
-			<salesforce:salesforce-query ><![CDATA[SELECT Name FROM Account WHERE ID = ':accId']]></salesforce:salesforce-query>
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, Name FROM Account WHERE ID = ':accId']]></salesforce:salesforce-query>
 			<salesforce:parameters><![CDATA[#[{accId: payload.AccountId}]]]></salesforce:parameters>
 		</salesforce:query-xml-stream>
-		<logger level="INFO" doc:name="Log Account Details" doc:id="af42a2f6-ec11-44f4-8984-c6897e28379f" message="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;payload]"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	AccountName: payload.payload.Name&#10;}]" doc:name="Create accountInfo" doc:id="7c164d04-cebc-4a1a-8d0e-7478c076e9d7" variableName="oppInfo"/>
 	</flow>
 </mule>
