@@ -28,7 +28,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		</salesforce:query-xml-stream>
 		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	AccountName: payload.payload.Name&#10;}]" doc:name="Create accountInfo" doc:id="7c164d04-cebc-4a1a-8d0e-7478c076e9d7" variableName="accountInfo"/>
 		<db:insert doc:name="Create Order" doc:id="bfb63509-7462-4dfc-b1c2-31dce449139d" config-ref="MYSQL_Config">
-			<db:sql ><![CDATA[insert into mulehome.order (OpportunityName, AccountName, Amount) values (':oppName', ':accName', :oppAmount);]]></db:sql>
+			<db:sql ><![CDATA[insert into mulehome.order (OpportunityName, AccountName, Amount) values (:oppName, :accName, :oppAmount);]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{oppName: vars.opportunityInfo.Name, accName: vars.accountInfo.AccountName, oppAmount: vars.opportunityInfo.Amount}]]]></db:input-parameters>
 		</db:insert>
 	</flow>
