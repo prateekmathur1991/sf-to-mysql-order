@@ -12,17 +12,24 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<salesforce:sfdc-config name="Sys_Admin_User_Config" doc:name="Salesforce Config" doc:id="8355b0a7-1cb0-42fd-b992-88c779220816" >
 		<salesforce:basic-connection username="prateekmathur1991@curious-bear-362857.com" password="AnandBhawan@2025" securityToken="jVShF2n2MVMXXgN5uNi3rczyS" />
 	</salesforce:sfdc-config>
+	<db:config name="MYSQL_Config" doc:name="Database Config" doc:id="2816a86d-ecd6-4b10-8b4a-af5aa6a6390e" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="TestUser123#" database="mulehome" />
+	</db:config>
 	<flow name="sf-to-mysql-orderFlow" doc:id="adc0d7fa-c42c-4437-8d6e-1009817414db" >
 		<salesforce:modified-object-listener doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" config-ref="Mulesoft_User_Config" objectType="Opportunity" triggersQuery="StageName='Closed Won'">
 			<scheduling-strategy >
 				<fixed-frequency />
 			</scheduling-strategy>
 		</salesforce:modified-object-listener>
-		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	Name: payload.Name,&#10;	Amount: payload.Amount&#10;}]" doc:name="Create opportunityInfo" doc:id="ee3b326a-7d68-4a9f-a879-55c8f53d8e64" variableName="oppInfo"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	Name: payload.Name,&#10;	Amount: payload.Amount&#10;}]" doc:name="Create opportunityInfo" doc:id="ee3b326a-7d68-4a9f-a879-55c8f53d8e64" variableName="opportunityInfo"/>
 		<salesforce:query-xml-stream doc:name="Get Account Details" doc:id="07430720-a377-4ade-9ca4-280693804701" config-ref="Mulesoft_User_Config">
 			<salesforce:salesforce-query ><![CDATA[SELECT Id, Name FROM Account WHERE ID = ':accId']]></salesforce:salesforce-query>
 			<salesforce:parameters><![CDATA[#[{accId: payload.AccountId}]]]></salesforce:parameters>
 		</salesforce:query-xml-stream>
-		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	AccountName: payload.payload.Name&#10;}]" doc:name="Create accountInfo" doc:id="7c164d04-cebc-4a1a-8d0e-7478c076e9d7" variableName="oppInfo"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	AccountName: payload.payload.Name&#10;}]" doc:name="Create accountInfo" doc:id="7c164d04-cebc-4a1a-8d0e-7478c076e9d7" variableName="accountInfo"/>
+		<db:insert doc:name="Create Order" doc:id="bfb63509-7462-4dfc-b1c2-31dce449139d" config-ref="MYSQL_Config">
+			<db:sql ><![CDATA[insert into mulehome.order (OpportunityName, AccountName, Amount) values (':oppName', ':accName', :oppAmount);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{oppName: vars.opportunityInfo.Name, accName: vars.accountInfo.AccountName, oppAmount: vars.opportunityInfo.Amount}]]]></db:input-parameters>
+		</db:insert>
 	</flow>
 </mule>
