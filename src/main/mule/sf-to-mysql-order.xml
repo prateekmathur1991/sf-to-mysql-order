@@ -22,11 +22,15 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			</scheduling-strategy>
 		</salesforce:modified-object-listener>
 		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	Name: payload.Name,&#10;	Amount: payload.Amount&#10;}]" doc:name="Create opportunityInfo" doc:id="ee3b326a-7d68-4a9f-a879-55c8f53d8e64" variableName="opportunityInfo"/>
-		<salesforce:query-xml-stream doc:name="Get Account Details" doc:id="07430720-a377-4ade-9ca4-280693804701" config-ref="Mulesoft_User_Config">
+		<salesforce:query-all doc:name="Get Account Details" doc:id="c5cd67d6-b1a2-4098-98e0-a5fd00eab05f" config-ref="Mulesoft_User_Config">
 			<salesforce:salesforce-query ><![CDATA[SELECT Id, Name FROM Account WHERE ID = ':accId']]></salesforce:salesforce-query>
-			<salesforce:parameters><![CDATA[#[{accId: payload.AccountId}]]]></salesforce:parameters>
-		</salesforce:query-xml-stream>
-		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	AccountName: payload.payload.Name&#10;}]" doc:name="Create accountInfo" doc:id="7c164d04-cebc-4a1a-8d0e-7478c076e9d7" variableName="accountInfo"/>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	accId : payload.AccountId
+}]]]></salesforce:parameters>
+		</salesforce:query-all>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;{&#10;	AccountName: payload.Name&#10;}]" doc:name="Create accountInfo" doc:id="7c164d04-cebc-4a1a-8d0e-7478c076e9d7" variableName="accountInfo"/>
 		<db:insert doc:name="Create Order" doc:id="bfb63509-7462-4dfc-b1c2-31dce449139d" config-ref="MYSQL_Config">
 			<db:sql ><![CDATA[insert into mulehome.order (OpportunityName, AccountName, Amount) values (:oppName, :accName, :oppAmount);]]></db:sql>
 			<db:input-parameters ><![CDATA[#[{oppName: vars.opportunityInfo.Name, accName: vars.accountInfo.AccountName, oppAmount: vars.opportunityInfo.Amount}]]]></db:input-parameters>
