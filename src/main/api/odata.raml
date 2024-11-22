@@ -1,0 +1,25 @@
+#%RAML 1.0 Library
+uses:
+  odata: libraries/odataLibrary.raml
+  
+types:
+  Order:
+    properties:
+      AccountId:
+        type: string
+        (odata.key): true
+        (odata.nullable): false
+      AccountName:
+        type: string
+        (odata.nullable): false
+      Amount:
+        type: number
+        (odata.precision): 16
+        (odata.scale): 2
+        (odata.nullable): false
+      OpportunityName:
+        type: string
+        (odata.nullable): false
+      OrderId:
+        type: integer
+        (odata.nullable): false 
