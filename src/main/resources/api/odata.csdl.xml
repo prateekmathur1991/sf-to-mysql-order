@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+  <edmx:DataServices>
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="odata.v4">
+      <EntityType Name="Order">
+        <Key>
+          <PropertyRef Name="OrderId" />
+        </Key>
+        <Property Name="AccountId" Type="Edm.String" Nullable="false" Unicode="false" />
+        <Property Name="AccountName" Type="Edm.String" Nullable="false" Unicode="false" />
+        <Property Name="Amount" Type="Edm.Decimal" Nullable="false" Precision="16" Scale="2" />
+        <Property Name="OpportunityName" Type="Edm.String" Nullable="false" Unicode="false" />
+        <Property Name="OrderId" Type="Edm.Int32" Nullable="false" />
+      </EntityType>
+      <EntityContainer Name="Container">
+        <EntitySet Name="Order" EntityType="odata.v4.Order" />
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
