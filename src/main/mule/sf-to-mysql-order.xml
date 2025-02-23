@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
 	<salesforce:sfdc-config name="Mulesoft_User_Config" doc:name="Salesforce Config" doc:id="cc44019e-fbef-4a27-bbd7-8ea29f7ed146" >
-		<salesforce:basic-connection username="mulesoft.integration@curious-bear-362857-dev-ed.my.salesforce.com" password="AnandBhawan@2026" securityToken="BFyEOLLBBldrPuAu8DJQlBxh9" />
-	</salesforce:sfdc-config>
-	<salesforce:sfdc-config name="Sys_Admin_User_Config" doc:name="Salesforce Config" doc:id="8355b0a7-1cb0-42fd-b992-88c779220816" >
-		<salesforce:basic-connection username="prateekmathur1991@curious-bear-362857.com" password="AnandBhawan@2025" securityToken="jVShF2n2MVMXXgN5uNi3rczyS" />
+		<salesforce:basic-connection username="${secure::sf.username}" password="${secure::sf.password}" securityToken="${secure::sf.token}"/>
 	</salesforce:sfdc-config>
 	<db:config name="MYSQL_Config" doc:name="Database Config" doc:id="2816a86d-ecd6-4b10-8b4a-af5aa6a6390e" >
-		<db:my-sql-connection host="localhost" port="3306" user="root" password="TestUser123#" database="mulehome" />
+		<db:my-sql-connection host="${secure::mysql.host}" port="${secure::mysql.port}" user="${secure::mysql.username}" password="${secure::mysql.password}" database="mulehome" />
 	</db:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="ab7e2d57-d8c9-4151-929c-7a37d012fb13" file="${env}.secure.properties" key="${secure.key}" >
+	</secure-properties:config>
 	<flow name="sf-to-mysql-orderFlow" doc:id="adc0d7fa-c42c-4437-8d6e-1009817414db" >
 		<salesforce:modified-object-listener doc:name="When Opportunity is Closed Won" doc:id="ecee625a-aced-418c-a564-04c2e415de99" config-ref="Mulesoft_User_Config" objectType="Opportunity" triggersQuery="StageName='Closed Won'">
 			<scheduling-strategy >

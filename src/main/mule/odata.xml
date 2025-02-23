@@ -5,7 +5,10 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
   <http:listener-config name="HTTP_Listener_Config">
     <http:listener-connection host="0.0.0.0" port="8081" />
   </http:listener-config>
-  <flow name="main-odata-flow">
+  <db:config name="odata-db-config" doc:name="Database Config" doc:id="4545badb-3d20-456a-9037-6f5ad6a9fd97" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="TestUser123#" database="mulehome" />
+	</db:config>
+	<flow name="main-odata-flow">
     <http:listener config-ref="HTTP_Listener_Config" path="/api/*">
       <http:response statusCode="#[attributes.statusCode default 200]">
         <http:headers>#[attributes.headers default {}]</http:headers>
@@ -49,7 +52,8 @@ output application/json
 			</apikit-odata:request-parameters>
 			<apikit-odata:transformation-parameters strictSearchTermMatch="true" />
 		</apikit-odata:transform-to-sql-select>
-		<db:select doc:name="Get Order Details" doc:id="dfb04621-1a1b-4dcb-9cfc-d985b388a7cc" config-ref="MYSQL_Config">
+		<logger level="INFO" doc:name="Log Select Statement" doc:id="58ef387b-5b65-4c0a-b4c2-eee0f80b8abc" message="#[payload]"/>
+		<db:select doc:name="Get Order Details" doc:id="dfb04621-1a1b-4dcb-9cfc-d985b388a7cc" config-ref="odata-db-config">
 			<db:sql ><![CDATA[#[payload]]]></db:sql>
 			<db:input-parameters ><![CDATA[#[attributes.queryParameters]]]></db:input-parameters>
 		</db:select>
